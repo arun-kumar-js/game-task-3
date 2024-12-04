@@ -1,17 +1,61 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>game</title>
-    <link rel="stylesheet" href="./dist/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Income Expense Calculator</title>
+  <link rel="stylesheet" href="./dist/styles.css">
 </head>
-<body class="bg-red-500 flex justify-center items-center h-screen">
-  <div class="text-center">
-    <h1 class="text-3xl font-semibold mb-4">Memory Game</h1>
-    <div id="game-board" class="grid grid-cols-4 gap-4">
-     
+<body class="bg-emerald-200 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-xl">
+    <h1 class="text-2xl font-bold text-center mb-4">Income Expense Tracker</h1>
+
+    <!-- Overview Section -->
+    <div class="grid grid-cols-3 gap-4 text-center mb-6">
+      <div>
+        <h2 class="text-lg font-semibold">Total Income</h2>
+        <p id="total-income" class="text-green-500 text-xl">$0</p>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold">Total Expense</h2>
+        <p id="total-expense" class="text-red-500 text-xl">$0</p>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold">Net Balance</h2>
+        <p id="net-balance" class="text-blue-500 text-xl">$0</p>
+      </div>
     </div>
-    <button id="reset-btn" class="mt-6 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Reset Game</button>
+
+    <!-- Filters Section -->
+    <div class="flex justify-center space-x-4 mb-6">
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="filter" value="all" checked class="form-radio">
+        <span>All</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="filter" value="income" class="form-radio">
+        <span>Income</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="filter" value="expense" class="form-radio">
+        <span>Expense</span>
+      </label>
+    </div>
+
+    <!-- Form Section -->
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3 items-center mb-6">
+      <input id="description" type="text" placeholder="Description" class="col-span-2 border rounded px-4 py-2">
+      <input id="amount" type="number" placeholder="Amount" class="border rounded px-4 py-2">
+      <select id="type" class="border rounded px-4 py-2">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button id="add-btn" class="col-span-1 bg-blue-500 text-white px-4 py-2 rounded">Add</button>
+      <button id="reset-btn" class="col-span-1 bg-gray-300 text-black px-4 py-2 rounded">Reset</button>
+    </div>
+
+    <!-- Entries List -->
+    <ul id="entry-list" class="space-y-2"></ul>
   </div>
 
   <script src="./js/script.js"></script>

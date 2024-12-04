@@ -1,94 +1,97 @@
-// Initialize game variables
-const gameBoard = document.getElementById("game-board");
-const resetBtn = document.getElementById("reset-btn");
-let flippedCards = [];
-let matchedCards = [];
+// script.js
 
-// Array of card values (8 pairs)
-const cardValues = ["A", "B", "C", "D", "E", "F", "G", "H"];
+let entries = JSON.parse(localStorage.getItem("entries")) || [];
+const entryList = document.getElementById("entry-list");
+const totalIncomeEl = document.getElementById("total-income");
+const totalExpenseEl = document.getElementById("total-expense");
+const netBalanceEl = document.getElementById("net-balance");
+const filterRadios = document.querySelectorAll("input[name='filter']");
+const descriptionEl = document.getElementById("description");
+const amountEl = document.getElementById("amount");
+const typeEl = document.getElementById("type");
 
-// Function to shuffle an array
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
-  }
-  return array;
-}
+function updateUI() {
+  const filter = document.querySelector("input[name='filter']:checked").value;
 
-// Function to create the game board
-function createBoard() {
-  // Create a shuffled array with 8 pairs
-  const cards = shuffle([...cardValues, ...cardValues]);
+  const filteredEntries =
+    filter === "all"
+      ? entries
+      : entries.filter((entry) => entry.type === filter);
 
-  // Clear previous board
-  gameBoard.innerHTML = "";
+  entryList.innerHTML = "";
 
-  // Create and append cards
-  cards.forEach((value, index) => {
-    const card = document.createElement("div");
-    card.classList.add("card");
-    card.setAttribute("data-value", value);
-    card.setAttribute("data-id", index);
-    card.addEventListener("click", flipCard);
-    gameBoard.appendChild(card);
+  filteredEntries.forEach((entry, index) => {
+    const li = document.createElement("li");
+    li.className =
+      "flex justify-between items-center border rounded px-4 py-2 bg-gray-50";
+
+    li.innerHTML = `
+      <span>{entry.description}</span>
+      <span class="₹{
+        entry.type === "income" ? "text-green-500" : "text-red-500"
+      }">
+        ₹{entry.type === "income" ? "+" : "-"}₹${entry.amount}
+      </span>
+      <div class="space-x-2">
+        <button onclick="editEntry(${index})" class="text-blue-500">Edit</button>
+        <button onclick="deleteEntry(${index})" class="text-red-500">Delete</button>
+      </div>
+    `;
+
+    entryList.appendChild(li);
   });
+
+  const totalIncome = entries
+    .filter((entry) => entry.type === "income")
+    .reduce((sum, entry) => sum + entry.amount, 0);
+
+  const totalExpense = entries
+    .filter((entry) => entry.type === "expense")
+    .reduce((sum, entry) => sum + entry.amount, 0);
+
+  totalIncomeEl.textContent = `₹${totalIncome}`;
+  totalExpenseEl.textContent = `₹${totalExpense}`;
+  netBalanceEl.textContent = `₹${totalIncome - totalExpense}`;
 }
 
-// Function to handle card flip
-function flipCard(event) {
-  const card = event.target;
+function addEntry() {
+  const description = descriptionEl.value.trim();
+  const amount = parseFloat(amountEl.value);
+  const type = typeEl.value;
 
-  // If card is already flipped or matched, return
-  if (
-    card.classList.contains("flipped") ||
-    card.classList.contains("matched")
-  ) {
+  if (!description || isNaN(amount) || amount <= 0) {
+    alert("Please enter valid details.");
     return;
   }
 
-  // Show the card's value
-  card.textContent = card.getAttribute("data-value");
-  card.classList.add("flipped");
-
-  // Add to flipped cards array
-  flippedCards.push(card);
-
-  // Check for match
-  if (flippedCards.length === 2) {
-    setTimeout(() => {
-      const [card1, card2] = flippedCards;
-
-      if (
-        card1.getAttribute("data-value") === card2.getAttribute("data-value")
-      ) {
-        card1.classList.add("matched");
-        card2.classList.add("matched");
-        matchedCards.push(card1, card2);
-      } else {
-        card1.classList.remove("flipped");
-        card2.classList.remove("flipped");
-        card1.textContent = "";
-        card2.textContent = "";
-      }
-
-      flippedCards = [];
-
-      // Check if the game is won
-      if (matchedCards.length === 16) {
-        alert("Congratulations! You have matched all the cards!");
-      }
-    }, 1000);
-  }
+  entries.push({ description, amount, type });
+  localStorage.setItem("entries", JSON.stringify(entries));
+  updateUI();
+  resetForm();
 }
 
-// Reset game
-resetBtn.addEventListener("click", () => {
-  matchedCards = [];
-  flippedCards = [];
-  createBoard();
-});
+function editEntry(index) {
+  const entry = entries[index];
+  descriptionEl.value = entry.description;
+  amountEl.value = entry.amount;
+  typeEl.value = entry.type;
+  deleteEntry(index);
+}
 
-// Initialize the game board
-createBoard();
-7
+function deleteEntry(index) {
+  entries.splice(index, 1);
+  localStorage.setItem("entries", JSON.stringify(entries));
+  updateUI();
+}
+
+function resetForm() {
+  descriptionEl.value = "";
+  amountEl.value = "";
+  typeEl.value = "income";
+}
+
+document.getElementById("add-btn").addEventListener("click", addEntry);
+document.getElementById("reset-btn").addEventListener("click", resetForm);
+filterRadios.forEach((radio) => radio.addEventListener("change", updateUI));
+
+updateUI();

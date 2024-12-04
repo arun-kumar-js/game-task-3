@@ -1,27 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* Add any custom styles you need */
-.card {
-  width: 80px;
-  height: 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: lawngreen;
-  border-radius: 8px;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-
-.card.flipped {
-  background-color: #8ce8d1;
-  color: white;
-}
-
-.card.matched {
-  background-color: #009688;
-  color: white;
-}
